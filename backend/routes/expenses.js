@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// GET all expenses
+// GET all expenses 
 //by descending dates
 router.get("/", (req, res) => {
   db.query("SELECT * FROM expenses ORDER BY date DESC", (err, results) => {
