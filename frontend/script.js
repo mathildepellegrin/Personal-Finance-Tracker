@@ -1,5 +1,5 @@
-//fetch api calls
-const API_URL = "http://localhost:5000/api/expenses";
+// Base API URL
+const API_URL = "http://localhost:3000/api";
 
 // --- REGISTER ---
 document.getElementById("register-form").addEventListener("submit", async (e) => {
@@ -17,8 +17,9 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
 
   const data = await res.json();
   alert(data.message || data.error);
-  
-  // --- LOGIN ---
+});
+
+// --- LOGIN ---
 document.getElementById("login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("login-email").value;
@@ -33,14 +34,14 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
   const data = await res.json();
   if (data.user) {
-    document.getElementById("username").textContent = data.user.username;
+    document.getElementById("username").textContent =
+      `${data.user.username} (${data.user.email})`;
     document.getElementById("auth-section").style.display = "none";
     document.getElementById("tracker-section").style.display = "block";
-    loadTransactions();
+    fetchExpenses();
   } else {
     alert(data.error);
   }
-});
 });
 
 // --- LOGOUT ---
@@ -53,12 +54,10 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
   document.getElementById("tracker-section").style.display = "none";
 });
 
-
-// --- TRANSACTIONS ---
-
+// --- EXPENSES ---
 
 async function fetchExpenses() {
-  const res = await fetch(API_URL);
+  const res = await fetch(`${API_URL}/expenses`, { credentials: "include" });
   const data = await res.json();
   const table = document.getElementById("expenses-table");
   table.innerHTML = "";
@@ -81,13 +80,15 @@ document.getElementById("expense-form").addEventListener("submit", async e => {
     amount: document.getElementById("amount").value,
     description: document.getElementById("description").value
   };
-  await fetch(API_URL, {
+  await fetch(`${API_URL}/expenses`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(expense)
+    body: JSON.stringify(expense),
+    credentials: "include"
   });
   fetchExpenses();
   e.target.reset();
 });
 
+// Initial fetch
 fetchExpenses();
